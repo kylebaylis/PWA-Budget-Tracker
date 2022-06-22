@@ -52,4 +52,39 @@ function uploadRecord() {
 
     // get all records from store and set to variable
     const getAll = entryObjectStore.getAll();
+
+    // on successful .getAll() this will run
+    getAll.onsuccess = function() {
+        // if data stored, send to api server
+        if(getAll.result.length > 0) {
+            fetch('/api/transaction', {
+                method: 'POST',
+                body: JSON.stringify(getAll.result),
+                headers: {
+                    Accept: 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(serverResponse => {
+                if(serverResponse.message) {
+                    throw new Error(serverResponse);
+                }
+                // open transaction
+                const transaction = db.transaction(['new_entry'], 'readwrite');
+                // access new_entry object store
+                const entryObjectStore = transaction.objectStore('new_entry');
+                // clear all items in store
+                entryObjectStore.clear();
+
+                alert('All saved transactions have been submitted');
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        }
+    };
 };
+
+// listens for app coming back online
+window.addEventListener('online', uploadRecord);
