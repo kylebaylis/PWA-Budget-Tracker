@@ -34,21 +34,21 @@ request.onerror = function(event) {
 // function in case of new upload with no internet connection
 function saveRecord(transaction) {
     // open new transaction with database - includes read and write permissions
-    const transaction = db.transaction(['new_entry'], 'readwrite');
+    const entry = db.transaction(['new_entry'], 'readwrite');
 
     // access object store of 'new_entry'
-    const entryObjectStore = transaction.objectStore('new_entry');
+    const entryObjectStore = entry.objectStore('new_entry');
 
     // add record to store
     entryObjectStore.add(transaction);
-};
+}
 
 function uploadRecord() {
     // open transaction in db
-    const transaction = db.transaction(['new_entry'], 'readwrite');
+    const entry = db.transaction(['new_entry'], 'readwrite');
 
     // access object store
-    const entryObjectStore = transaction.objectStore('new_entry');
+    const entryObjectStore = entry.objectStore('new_entry');
 
     // get all records from store and set to variable
     const getAll = entryObjectStore.getAll();
@@ -84,7 +84,7 @@ function uploadRecord() {
             });
         }
     };
-};
+}
 
 // listens for app coming back online
 window.addEventListener('online', uploadRecord);
